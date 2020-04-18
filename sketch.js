@@ -98,8 +98,13 @@ function draw() {
         killHuman(spriteA);
     });
 
+    var total_vitamins = 0;
     for(var i = 0; i < humans.length; i++) {
         var sprite = humans[i];
+
+        if (sprite.vitamins) {
+            total_vitamins += sprite.vitamins
+        }
 
         if(sprite.position.x < sprite.width / 2 ) {
             sprite.position.x = sprite.width / 2;
@@ -134,6 +139,23 @@ function draw() {
         rect(1024 - 154, hoverPos, 150, 57);
         pop();
     }
+
+    push();
+    textSize(12);
+    textAlign(CENTER, CENTER);
+    textStyle(BOLD);
+    var mortality = max(1, parseInt((200 - infection_factor) / 200 * 100));
+    text(mortality + ' % Mortality', 940, 180);
+    pop();
+
+    push();
+    textSize(12);
+    textAlign(CENTER, CENTER);
+    textStyle(BOLD);
+    var vitaminzed = parseInt((total_vitamins / (humans.length * 10 * 3)) * 100);
+    text(vitaminzed + ' % Vitaminized', 940, 200);
+    pop();
+
 
     push();
     textSize(16);
