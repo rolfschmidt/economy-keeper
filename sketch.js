@@ -221,7 +221,7 @@ function draw() {
     textSize(12);
     textAlign(CENTER, CENTER);
     textStyle(BOLD);
-    text('100 Desinfection Trucks', 940, truck_middle - 25);
+    text('100 Mortality Trucks', 940, truck_middle - 25);
     pop();
 
     push();
