@@ -4,6 +4,7 @@ var trucks;
 var waterstorms;
 var clouds;
 var hoverPos;
+var gameOver          = false;
 var cash              = 100000;
 var costs             = 0;
 var costsTimer        = 3000;
@@ -74,6 +75,20 @@ function setup() {
 }
 
 function draw() {
+    if (gameOver) {
+        background(0, 0, 0);
+
+        push();
+        fill(255, 204, 0, 150);
+        textSize(32);
+        textAlign(CENTER, CENTER);
+        text('GAME OVER', 512, 300);
+        pop();
+
+        return;
+    }
+
+
     if (waterstorms && waterstorms.length > 0) {
         background(0, 36, 255);
     }
@@ -186,60 +201,70 @@ function draw() {
     textSize(12);
     textAlign(CENTER, CENTER);
     textStyle(BOLD);
-    text('100 Vitamin C', 940, apple_middle - 25);
+    text('Vitamin C', 940, apple_middle - 25);
+    text('Level 1', 995, apple_middle + 16);
     pop();
 
     push();
     textSize(12);
     textAlign(CENTER, CENTER);
     textStyle(BOLD);
-    text('100 Vaccinate', 940, vaccine_middle - 25);
+    text('Vaccinate', 940, vaccine_middle - 25);
+    text('Level 1', 995, vaccine_middle + 16);
     pop();
 
     push();
     textSize(12);
     textAlign(CENTER, CENTER);
     textStyle(BOLD);
-    text('100 Water Storm', 940, waterstorm_middle - 25);
+    text('Water Storm', 940, waterstorm_middle - 25);
+    text('Level 1', 995, waterstorm_middle + 16);
     pop();
 
     push();
     textSize(12);
     textAlign(CENTER, CENTER);
     textStyle(BOLD);
-    text('100 Mask Up!', 940, mask_middle - 25);
+    text('Mask Up!', 940, mask_middle - 25);
+    text('Level 1', 995, mask_middle + 16);
     pop();
 
     push();
     textSize(12);
     textAlign(CENTER, CENTER);
     textStyle(BOLD);
-    text('100 Print Mooney', 940, inflation_middle - 25);
+    text('Print Mooney', 940, inflation_middle - 25);
+    text('Level 1', 995, inflation_middle + 16);
     pop();
 
     push();
     textSize(12);
     textAlign(CENTER, CENTER);
     textStyle(BOLD);
-    text('100 Mortality Trucks', 940, truck_middle - 25);
+    text('Mortality Trucks', 940, truck_middle - 25);
+    text('Level 1', 995, truck_middle + 15);
     pop();
 
     push();
     textSize(12);
     textAlign(CENTER, CENTER);
     textStyle(BOLD);
-    text('100 Breed', 940, birth_middle - 25);
+    text('Breed', 940, birth_middle - 25);
+    text('Level 1', 995, birth_middle + 15);
     pop();
 
     push();
     textSize(12);
     textAlign(CENTER, CENTER);
     textStyle(BOLD);
-    text('100 Execute sick', 940, execute_middle - 25);
+    text('Execute sick', 940, execute_middle - 25);
+    text('Level 1', 995, execute_middle + 15);
     pop();
 }
 
 function mouseClicked() {
+    if (gameOver) return;
+
     if (mouseX >= 1024 - 160 && mouseX <= 1024) {
 
         if (mouseY >= apple_middle - 34 && mouseY <= apple_middle + 34 ) {
@@ -337,11 +362,15 @@ function addTrucks() {
 }
 
 function payCash(money) {
-    cash -= money;
+    cash -= parseInt(money);
+
+    if (cash >= 0) return;
+
+    gameOver = true;
 }
 
 function addCash(money) {
-    cash += money;
+    cash += parseInt(money);
 }
 
 function vaccinateHuman(sprite) {
@@ -383,6 +412,10 @@ function killHuman(sprite) {
     }
 
     sprite.remove();
+
+    if ( humans.length > 0 ) return;
+
+    gameOver = true;
 }
 
 function actionApple() {
@@ -438,6 +471,9 @@ function actionWaterstorm() {
         }
     }
 
+    payCash( cash / 2 );
+    mortalityTimer = parseInt(mortalityTimer * 0.9);
+
     setTimeout(function() {
         for (var i = waterstorms.length - 1; i >= 0; i--) {
             waterstorms[i].remove();
@@ -467,6 +503,8 @@ function actionInflation() {
 function actionTruck() {
     console.log('clicked truck');
     addTrucks(5);
+    payCash( cash / 2 );
+    mortalityFactor += 4;
 }
 
 function actionBirth() {
@@ -487,12 +525,16 @@ function actionExecute() {
 }
 
 function payCosts() {
+    if (gameOver) return;
+
     costs = ( 100 - humans.length ) * 1000 * (1 + parseInt((200 - mortalityFactor) / 200));
     payCash(costs);
     setTimeout(payCosts, costsTimer);
 }
 
 function setMortality() {
+    if (gameOver) return;
+
     var reduceBy = 4;
     if (mortalityFactor - reduceBy > reduceBy) {
         mortalityFactor -= reduceBy;
