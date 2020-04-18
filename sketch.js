@@ -19,21 +19,23 @@ function preload() {
     sidebar = createSprite(1024 - 80, 384);
     sidebar.addAnimation('base', 'assets/sidebar.png');
 
-    humans               = new Group();
-    apples               = new Group();
-    trucks               = new Group();
-    clouds               = new Group();
-    animation_human_base = loadAnimation('assets/human-base-frame-01.png', 'assets/human-base-frame-02.png', 'assets/human-base-frame-03.png', 'assets/human-base-frame-04.png', 'assets/human-base-frame-05.png');
-    animation_human_ill  = loadAnimation('assets/human-frame-01.png', 'assets/human-frame-02.png', 'assets/human-frame-03.png', 'assets/human-frame-04.png', 'assets/human-frame-05.png');
-    animation_waterstorm = loadAnimation('assets/flooding-0.png', 'assets/flooding-1.png', 'assets/flooding-2.png', 'assets/flooding-3.png');
-    animation_apple      = loadAnimation('assets/apple-0.png', 'assets/apple-1.png', 'assets/apple-2.png', 'assets/apple-3.png', 'assets/apple-4.png');
-    animation_vaccine    = loadAnimation('assets/vaccine-0.png', 'assets/vaccine-1.png', 'assets/vaccine-2.png', 'assets/vaccine-3.png');
-    animation_mask       = loadAnimation('assets/mask-0.png', 'assets/mask-1.png', 'assets/mask-2.png', 'assets/mask-3.png', 'assets/mask-4.png', 'assets/mask-5.png');
-    animation_inflation  = loadAnimation('assets/inflation-0.png', 'assets/inflation-1.png', 'assets/inflation-2.png', 'assets/inflation-3.png', 'assets/inflation-4.png', 'assets/inflation-5.png');
-    animation_truck      = loadAnimation('assets/truck-0.png', 'assets/truck-1.png', 'assets/truck-2.png', 'assets/truck-3.png', 'assets/truck-4.png');
-    animation_birth      = loadAnimation('assets/birth-0.png', 'assets/birth-1.png', 'assets/birth-2.png', 'assets/birth-3.png');
-    animation_execute    = loadAnimation('assets/execute-0.png', 'assets/execute-1.png', 'assets/execute-2.png', 'assets/execute-3.png', 'assets/execute-4.png');
-    animation_cloud      = loadAnimation('assets/cloud-0.png', 'assets/cloud-1.png', 'assets/cloud-2.png', 'assets/cloud-3.png', 'assets/cloud-4.png');
+    humans                 = new Group();
+    apples                 = new Group();
+    trucks                 = new Group();
+    clouds                 = new Group();
+    animation_human_base   = loadAnimation('assets/human-base-frame-01.png', 'assets/human-base-frame-02.png', 'assets/human-base-frame-03.png', 'assets/human-base-frame-04.png', 'assets/human-base-frame-05.png');
+    animation_human_ill    = loadAnimation('assets/human-frame-01.png', 'assets/human-frame-02.png', 'assets/human-frame-03.png', 'assets/human-frame-04.png', 'assets/human-frame-05.png');
+    animation_human_mask   = loadAnimation('assets/human-mask-frame-01.png', 'assets/human-mask-frame-02.png', 'assets/human-mask-frame-03.png', 'assets/human-mask-frame-04.png', 'assets/human-mask-frame-05.png');
+    animation_human_immune = loadAnimation('assets/human-immune-frame-01.png', 'assets/human-immune-frame-02.png', 'assets/human-immune-frame-03.png', 'assets/human-immune-frame-04.png', 'assets/human-immune-frame-05.png');
+    animation_waterstorm   = loadAnimation('assets/flooding-0.png', 'assets/flooding-1.png', 'assets/flooding-2.png', 'assets/flooding-3.png');
+    animation_apple        = loadAnimation('assets/apple-0.png', 'assets/apple-1.png', 'assets/apple-2.png', 'assets/apple-3.png', 'assets/apple-4.png');
+    animation_vaccine      = loadAnimation('assets/vaccine-0.png', 'assets/vaccine-1.png', 'assets/vaccine-2.png', 'assets/vaccine-3.png');
+    animation_mask         = loadAnimation('assets/mask-0.png', 'assets/mask-1.png', 'assets/mask-2.png', 'assets/mask-3.png', 'assets/mask-4.png', 'assets/mask-5.png');
+    animation_inflation    = loadAnimation('assets/inflation-0.png', 'assets/inflation-1.png', 'assets/inflation-2.png', 'assets/inflation-3.png', 'assets/inflation-4.png', 'assets/inflation-5.png');
+    animation_truck        = loadAnimation('assets/truck-0.png', 'assets/truck-1.png', 'assets/truck-2.png', 'assets/truck-3.png', 'assets/truck-4.png');
+    animation_birth        = loadAnimation('assets/birth-0.png', 'assets/birth-1.png', 'assets/birth-2.png', 'assets/birth-3.png');
+    animation_execute      = loadAnimation('assets/execute-0.png', 'assets/execute-1.png', 'assets/execute-2.png', 'assets/execute-3.png', 'assets/execute-4.png');
+    animation_cloud        = loadAnimation('assets/cloud-0.png', 'assets/cloud-1.png', 'assets/cloud-2.png', 'assets/cloud-3.png', 'assets/cloud-4.png');
     addHumans(100);
 
     apple = createSprite(1024 - 80, apple_middle);
@@ -91,6 +93,7 @@ function draw() {
         spriteA.vitamins += 10;
     });
     humans.collide(trucks, function(spriteA, spriteB) {
+        if ( parseInt(random(1, 101)) != 100) return;
         spriteA.truckHit = true;
         killHuman(spriteA);
     });
@@ -155,7 +158,7 @@ function draw() {
     textSize(12);
     textAlign(CENTER, CENTER);
     textStyle(BOLD);
-    text('100 Vaccines', 940, vaccine_middle - 25);
+    text('100 Vaccinate', 940, vaccine_middle - 25);
     pop();
 
     push();
@@ -169,7 +172,7 @@ function draw() {
     textSize(12);
     textAlign(CENTER, CENTER);
     textStyle(BOLD);
-    text('100 Face Masks', 940, mask_middle - 25);
+    text('100 Mask Up!', 940, mask_middle - 25);
     pop();
 
     push();
@@ -202,7 +205,7 @@ function draw() {
 }
 
 function mouseClicked() {
-    if (mouseX >= 1024 - 160) {
+    if (mouseX >= 1024 - 160 && mouseX <= 1024) {
 
         if (mouseY >= apple_middle - 34 && mouseY <= apple_middle + 34 ) {
             actionApple();
@@ -250,6 +253,8 @@ function addHumans(count) {
         var human = createSprite(random(200, 800), random(200,600), 32, 32);
         human.addAnimation('base', animation_human_base);
         human.addAnimation('ill', animation_human_ill);
+        human.addAnimation('mask', animation_human_mask);
+        human.addAnimation('immune', animation_human_immune);
 
         human.setCollider('rectangle', 0, 0, 32, 32);
         human.setSpeed(random(2, 3), random(0, 360));
@@ -270,15 +275,15 @@ function addApples(count) {
     return true;
 }
 
-function addTrucks(count) {
+function addTrucks() {
     var startY = 100;
-    for (var i = 0; i < count; i++) {
+    for (var i = 0; i < 3; i++) {
         var truck = createSprite(32, startY, 32, 32);
         truck.addAnimation('base', animation_truck);
         truck.velocity.x = 5;
         trucks.add(truck)
 
-        startY += 150;
+        startY += 250;
     }
 
     for (var i = 0; i < 15; i++) {
@@ -300,8 +305,21 @@ function addCash(money) {
     cash += money;
 }
 
+function vaccinateHuman(sprite) {
+    sprite.changeAnimation('immune');
+}
+function maskHuman(sprite) {
+    sprite.changeAnimation('mask');
+}
+
 function infectHuman(sprite) {
     if ( sprite.getAnimationLabel() == 'ill' ) return;
+    if ( sprite.getAnimationLabel() == 'immune' ) return;
+    if ( sprite.getAnimationLabel() == 'mask' ) {
+        sprite.changeAnimation('base');
+        console.log('fix');
+        return;
+    }
 
     sprite.changeAnimation('ill');
     setTimeout(function() {
@@ -333,6 +351,20 @@ function actionApple() {
 
 function actionVaccine() {
     console.log('clicked vaccine');
+    for (var i = 0; i < humans.length; i++) {
+        var sprite = humans[i];
+        if ( sprite.getAnimationLabel() == 'ill' ) continue;
+        if ( sprite.getAnimationLabel() == 'mask' ) continue;
+        if ( sprite.getAnimationLabel() == 'immune' ) continue;
+
+        vaccinateHuman(sprite);
+
+        setTimeout(function() {
+            healHuman(sprite);
+        }, 10000);
+
+        break;
+    }
 }
 
 function actionWaterstorm() {
@@ -368,6 +400,16 @@ function actionWaterstorm() {
 
 function actionMask() {
     console.log('clicked mask');
+    for (var i = 0; i < humans.length; i++) {
+        var sprite = humans[i];
+        if ( sprite.getAnimationLabel() == 'ill' ) continue;
+        if ( sprite.getAnimationLabel() == 'mask' ) continue;
+        if ( sprite.getAnimationLabel() == 'immune' ) continue;
+
+        maskHuman(sprite);
+
+        break;
+    }
 }
 
 function actionInflation() {
