@@ -5,7 +5,10 @@ var waterstorms;
 var clouds;
 var hoverPos;
 var cash              = 100000;
-var infection_factor  = 200;
+var costs             = 0;
+var costsTimer        = 3000;
+var mortalityTimer    = 5000;
+var mortalityFactor   = 200;
 var apple_middle      = 270;
 var vaccine_middle    = 270 + 68;
 var waterstorm_middle = 270 + 68 + 68;
@@ -61,6 +64,9 @@ function preload() {
 
     execute = createSprite(1024 - 80, execute_middle);
     execute.addAnimation('base', animation_execute);
+
+    setTimeout(payCosts, costsTimer);
+    setTimeout(setMortality, mortalityTimer);
 }
 
 function setup() {
@@ -79,7 +85,7 @@ function draw() {
     }
 
     humans.bounce(humans, function(spriteA, spriteB) {
-        if ( parseInt(random(1, infection_factor)) != 3) {
+        if ( parseInt(random(1, mortalityFactor)) != 3) {
             if ( spriteA.getAnimationLabel() != 'ill' && spriteB.getAnimationLabel() != 'ill' ) return;
             if ( parseInt(random(1, 31)) != 30 ) return;
         }
@@ -141,10 +147,30 @@ function draw() {
     }
 
     push();
+    textSize(16);
+    textAlign(CENTER, CENTER);
+    text(humans.length, 940, 55);
+    pop();
+
+    push();
+    textSize(32);
+    textAlign(CENTER, CENTER);
+    text(cash, 940, 130);
+    pop();
+
+    push();
+    fill(360, 100, 100);
     textSize(12);
     textAlign(CENTER, CENTER);
     textStyle(BOLD);
-    var mortality = max(1, parseInt((200 - infection_factor) / 200 * 100));
+    text('-' + costs, 940, 150);
+    pop();
+
+    push();
+    textSize(12);
+    textAlign(CENTER, CENTER);
+    textStyle(BOLD);
+    var mortality = max(1, parseInt((200 - mortalityFactor) / 200 * 100));
     text(mortality + ' % Mortality', 940, 180);
     pop();
 
@@ -154,19 +180,6 @@ function draw() {
     textStyle(BOLD);
     var vitaminzed = parseInt((total_vitamins / (humans.length * 10 * 3)) * 100);
     text(vitaminzed + ' % Vitaminized', 940, 200);
-    pop();
-
-
-    push();
-    textSize(16);
-    textAlign(CENTER, CENTER);
-    text(humans.length, 940, 55);
-    pop();
-
-    push();
-    textSize(32);
-    textAlign(CENTER, CENTER);
-    text(cash, 940, 135);
     pop();
 
     push();
@@ -323,6 +336,10 @@ function addTrucks() {
     return true;
 }
 
+function payCash(money) {
+    cash -= money;
+}
+
 function addCash(money) {
     cash += money;
 }
@@ -459,4 +476,19 @@ function actionExecute() {
 
         break;
     }
+}
+
+function payCosts() {
+    costs = ( 100 - humans.length ) * 1000;
+    payCash(costs);
+    setTimeout(payCosts, costsTimer);
+}
+
+function setMortality() {
+    var reduceBy = 4;
+    if (mortalityFactor - reduceBy > reduceBy) {
+        mortalityFactor -= reduceBy;
+    }
+
+    setTimeout(setMortality, mortalityTimer);
 }
