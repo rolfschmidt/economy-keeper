@@ -373,6 +373,8 @@ function healHuman(sprite) {
 function killHuman(sprite) {
     if (!sprite.truckHit) {
         if ( sprite.getAnimationLabel() == 'base' ) return healHuman(sprite);
+        if ( sprite.getAnimationLabel() == 'mask' ) return healHuman(sprite);
+        if ( sprite.getAnimationLabel() == 'immune' ) return healHuman(sprite);
 
         if (sprite.vitamins && sprite.vitamins >= 30) {
             sprite.vitamins = 0;
@@ -418,15 +420,21 @@ function actionWaterstorm() {
 
     }
 
-    var healOrInfect = parseInt(random(0, 2)) == 1 ? true : false;
+    var healOrInfect = parseInt(random(0, 4));
     for(var i = 0; i < humans.length; i++) {
         var sprite = humans[i];
 
-        if ( healOrInfect == true && sprite.getAnimationLabel() == 'ill' ) {
+        if ( healOrInfect == 0 && sprite.getAnimationLabel() == 'ill' ) {
             healHuman(sprite);
         }
-        else if ( healOrInfect == false && sprite.getAnimationLabel() != 'ill' ) {
+        else if ( healOrInfect == 1 && sprite.getAnimationLabel() != 'ill' ) {
             infectHuman(sprite);
+        }
+        else if ( healOrInfect == 2 && sprite.getAnimationLabel() == 'ill' ) {
+            vaccinateHuman(sprite);
+        }
+        else if ( healOrInfect == 3 && sprite.getAnimationLabel() == 'ill' ) {
+            maskHuman(sprite);
         }
     }
 
@@ -479,7 +487,7 @@ function actionExecute() {
 }
 
 function payCosts() {
-    costs = ( 100 - humans.length ) * 1000;
+    costs = ( 100 - humans.length ) * 1000 * (1 + parseInt((200 - mortalityFactor) / 200));
     payCash(costs);
     setTimeout(payCosts, costsTimer);
 }
