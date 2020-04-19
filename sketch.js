@@ -165,14 +165,15 @@ function preload() {
     animation_upgrade      = loadAnimation('assets/upgrade-0.png', 'assets/upgrade-1.png', 'assets/upgrade-2.png', 'assets/upgrade-3.png');
 
     soundFormats('mp3');
-    sound_apple  = loadSound('sounds/apple.mp3');
-    sound_gun    = loadSound('sounds/gun.mp3');
-    sound_love   = loadSound('sounds/love.mp3');
-    sound_mask   = loadSound('sounds/mask.mp3');
-    sound_money  = loadSound('sounds/money.mp3');
-    sound_needle = loadSound('sounds/needle.mp3');
-    sound_truck  = loadSound('sounds/truck.mp3');
-    sound_woosh  = loadSound('sounds/woosh.mp3');
+    sound_apple   = loadSound('sounds/apple.mp3');
+    sound_gun     = loadSound('sounds/gun.mp3');
+    sound_love    = loadSound('sounds/love.mp3');
+    sound_mask    = loadSound('sounds/mask.mp3');
+    sound_money   = loadSound('sounds/money.mp3');
+    sound_needle  = loadSound('sounds/needle.mp3');
+    sound_truck   = loadSound('sounds/truck.mp3');
+    sound_woosh   = loadSound('sounds/woosh.mp3');
+    sound_levelup = loadSound('sounds/level_up_4.mp3');
 
     var volume = 0.1;
     sound_apple.setVolume(volume);
@@ -183,6 +184,7 @@ function preload() {
     sound_needle.setVolume(volume);
     sound_truck.setVolume(volume);
     sound_woosh.setVolume(volume);
+    sound_levelup.setVolume(volume);
 
     apple = createSprite(1024 - 80, apple_middle);
     apple.addAnimation('base', animation_apple);
@@ -980,6 +982,8 @@ function doUpgrade(action) {
 
     payCash(upgrades[action]['costs'][upgradeLevel], action + ' upgrade');
     upgrades[action]['level'] += 1;
+
+    sound_levelup.play();
 
     return true;
 }
