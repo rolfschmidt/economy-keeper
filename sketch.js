@@ -599,6 +599,7 @@ function actionMask() {
 
         break;
     }
+    sound_mask.play();
 }
 
 function actionInflation() {
