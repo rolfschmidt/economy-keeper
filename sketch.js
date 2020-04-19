@@ -40,6 +40,7 @@ function preload() {
     animation_human_ill    = loadAnimation('assets/human-frame-01.png', 'assets/human-frame-02.png', 'assets/human-frame-03.png', 'assets/human-frame-04.png', 'assets/human-frame-05.png');
     animation_human_mask   = loadAnimation('assets/human-mask-frame-01.png', 'assets/human-mask-frame-02.png', 'assets/human-mask-frame-03.png', 'assets/human-mask-frame-04.png', 'assets/human-mask-frame-05.png');
     animation_human_immune = loadAnimation('assets/human-immune-frame-01.png', 'assets/human-immune-frame-02.png', 'assets/human-immune-frame-03.png', 'assets/human-immune-frame-04.png', 'assets/human-immune-frame-05.png');
+    animation_human_blood  = loadAnimation('assets/human-blood-frame-01.png', 'assets/human-blood-frame-02.png', 'assets/human-blood-frame-03.png', 'assets/human-blood-frame-04.png', 'assets/human-blood-frame-05.png');
     animation_waterstorm   = loadAnimation('assets/flooding-0.png', 'assets/flooding-1.png', 'assets/flooding-2.png', 'assets/flooding-3.png');
     animation_apple        = loadAnimation('assets/apple-0.png', 'assets/apple-1.png', 'assets/apple-2.png', 'assets/apple-3.png', 'assets/apple-4.png');
     animation_vaccine      = loadAnimation('assets/vaccine-0.png', 'assets/vaccine-1.png', 'assets/vaccine-2.png', 'assets/vaccine-3.png');
@@ -473,7 +474,13 @@ function killHuman(sprite) {
         }
     }
 
+    var blood = createSprite(sprite.position.x, sprite.position.y, 32, 32);
+    blood.addAnimation('blood', animation_human_blood);
     sprite.remove();
+
+    setTimeout(function() {
+        blood.remove();
+    }, 500);
 
     if ( humans.length > 0 ) return;
 
@@ -613,7 +620,7 @@ function gameStop() {
     }
     gameIntervals = [];
 
-    $.post("http://economy-keeper.bplaced.net/toplist.php", { name: username, points: points }, function( data ) {
+    $.post("https://economy-keeper.bplaced.net/toplist.php", { name: username, points: points }, function( data ) {
         toplist = JSON.parse(data);
     });
 }
