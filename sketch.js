@@ -110,7 +110,7 @@ function preload() {
 }
 
 function setup() {
-    frameRate(30);
+    frameRate(60);
     createCanvas(1024, 768);
 }
 
