@@ -425,7 +425,6 @@ function infectHuman(sprite) {
     if ( sprite.getAnimationLabel() == 'immune' ) return;
     if ( sprite.getAnimationLabel() == 'mask' ) {
         sprite.changeAnimation('base');
-        console.log('fix');
         return;
     }
 
@@ -459,12 +458,10 @@ function killHuman(sprite) {
 }
 
 function actionApple() {
-    console.log('clicked apple');
     addApples(1);
 }
 
 function actionVaccine() {
-    console.log('clicked vaccine');
     for (var i = 0; i < humans.length; i++) {
         var sprite = humans[i];
         if ( sprite.getAnimationLabel() == 'ill' ) continue;
@@ -483,7 +480,6 @@ function actionVaccine() {
 
 function actionWaterstorm() {
     if (waterstorms && waterstorms.length > 0) return;
-    console.log('clicked waterstorm');
 
     waterstorms = new Group();
     for (var i = 0; i < 20; i++) {
@@ -522,7 +518,6 @@ function actionWaterstorm() {
 }
 
 function actionMask() {
-    console.log('clicked mask');
     for (var i = 0; i < humans.length; i++) {
         var sprite = humans[i];
         if ( sprite.getAnimationLabel() == 'ill' ) continue;
@@ -536,24 +531,20 @@ function actionMask() {
 }
 
 function actionInflation() {
-    console.log('clicked inflation');
     addCash(10000);
 }
 
 function actionTruck() {
-    console.log('clicked truck');
     addTrucks(5);
     payCash( cash / 2 );
     mortalityFactor += 4;
 }
 
 function actionBirth() {
-    console.log('clicked birth');
     addHumans(1);
 }
 
 function actionExecute() {
-    console.log('clicked execute');
     for (var i = 0; i < humans.length; i++) {
         var sprite = humans[i];
         if ( sprite.getAnimationLabel() != 'ill' ) continue;
