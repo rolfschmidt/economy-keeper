@@ -33,11 +33,13 @@ function preload() {
     sidebar = createSprite(1024 - 80, 384);
     sidebar.addAnimation('base', 'assets/sidebar.png');
 
-    username               = $('span.user_name').text() || 'anonymous-' + parseInt(random(1, 1000000));
-    humans                 = new Group();
-    apples                 = new Group();
-    trucks                 = new Group();
-    clouds                 = new Group();
+    username = 'anonymous-' + parseInt(random(1, 1000000));
+
+    humans = new Group();
+    apples = new Group();
+    trucks = new Group();
+    clouds = new Group();
+
     animation_human_base   = loadAnimation('assets/human-base-frame-01.png', 'assets/human-base-frame-02.png', 'assets/human-base-frame-03.png', 'assets/human-base-frame-04.png', 'assets/human-base-frame-05.png');
     animation_human_ill    = loadAnimation('assets/human-frame-01.png', 'assets/human-frame-02.png', 'assets/human-frame-03.png', 'assets/human-frame-04.png', 'assets/human-frame-05.png');
     animation_human_mask   = loadAnimation('assets/human-mask-frame-01.png', 'assets/human-mask-frame-02.png', 'assets/human-mask-frame-03.png', 'assets/human-mask-frame-04.png', 'assets/human-mask-frame-05.png');
@@ -52,6 +54,26 @@ function preload() {
     animation_birth        = loadAnimation('assets/birth-0.png', 'assets/birth-1.png', 'assets/birth-2.png', 'assets/birth-3.png');
     animation_execute      = loadAnimation('assets/execute-0.png', 'assets/execute-1.png', 'assets/execute-2.png', 'assets/execute-3.png', 'assets/execute-4.png');
     animation_cloud        = loadAnimation('assets/cloud-0.png', 'assets/cloud-1.png', 'assets/cloud-2.png', 'assets/cloud-3.png', 'assets/cloud-4.png');
+
+    soundFormats('mp3');
+    sound_apple  = loadSound('sounds/apple.mp3');
+    sound_gun    = loadSound('sounds/gun.mp3');
+    sound_love   = loadSound('sounds/love.mp3');
+    sound_mask   = loadSound('sounds/mask.mp3');
+    sound_money  = loadSound('sounds/money.mp3');
+    sound_needle = loadSound('sounds/needle.mp3');
+    sound_truck  = loadSound('sounds/truck.mp3');
+    sound_woosh  = loadSound('sounds/woosh.mp3');
+
+    var volume = 0.08;
+    sound_apple.setVolume(volume);
+    sound_gun.setVolume(volume);
+    sound_love.setVolume(volume);
+    sound_mask.setVolume(volume);
+    sound_money.setVolume(volume);
+    sound_needle.setVolume(volume);
+    sound_truck.setVolume(volume);
+    sound_woosh.setVolume(volume);
 
     apple = createSprite(1024 - 80, apple_middle);
     apple.addAnimation('base', animation_apple);
@@ -503,6 +525,7 @@ function killHuman(sprite) {
 
 function actionApple() {
     addApples(1);
+    sound_apple.play();
 }
 
 function actionVaccine() {
@@ -520,6 +543,8 @@ function actionVaccine() {
 
         break;
     }
+
+    sound_needle.play();
 }
 
 function actionWaterstorm() {
@@ -559,6 +584,8 @@ function actionWaterstorm() {
             waterstorms[i].remove();
         }
     }, 2000);
+
+    sound_woosh.play();
 }
 
 function actionMask() {
@@ -576,16 +603,19 @@ function actionMask() {
 
 function actionInflation() {
     addCash(10000);
+    sound_money.play();
 }
 
 function actionTruck() {
     addTrucks(5);
     payCash( cash / 2 );
     mortalityFactor += 4;
+    sound_truck.play();
 }
 
 function actionBirth() {
     addHumans(1);
+    sound_love.play();
 }
 
 function actionExecute() {
@@ -597,6 +627,7 @@ function actionExecute() {
 
         break;
     }
+    sound_gun.play();
 }
 
 function payCosts() {
