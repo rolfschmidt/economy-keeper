@@ -5,6 +5,7 @@ var waterstorms;
 var clouds;
 var hoverPos;
 var gameOver;
+var gameOverReason;
 var gameIntervals;
 var cash;
 var costs;
@@ -17,6 +18,7 @@ var restartInfo;
 var restarting;
 var username;
 var toplist;
+var infectedCount;
 
 const apple_middle      = 270;
 const vaccine_middle    = 270 + 68;
@@ -94,17 +96,24 @@ function draw() {
         pop();
 
         push();
+        fill(255, 204, 0);
+        textSize(16);
+        textAlign(CENTER, CENTER);
+        text('Reason: ' + gameOverReason, 512, 332);
+        pop();
+
+        push();
         fill(153, 229, 80);
         textSize(24);
         textAlign(CENTER, CENTER);
-        text(points + ' Points', 512, 350);
+        text(points + ' Points', 512, 382);
         pop();
 
         push();
         fill(255, 204, 0);
         textSize(24);
         textAlign(CENTER, CENTER);
-        text('CLICK TO RESTART', 512, 400);
+        text('CLICK TO RESTART', 512, 432);
         pop();
 
         if (restartInfo > 0) {
@@ -112,7 +121,7 @@ function draw() {
             fill(360, 100, 100);
             textSize(16);
             textAlign(CENTER, CENTER);
-            text('Game will restart in ' + restartInfo + ' seconds...', 512, 450);
+            text('Game will restart in ' + restartInfo + ' seconds...', 850, 732);
             pop();
         }
 
@@ -171,8 +180,13 @@ function draw() {
     });
 
     var total_vitamins = 0;
+    infectedCount = 0;
     for(var i = 0; i < humans.length; i++) {
         var sprite = humans[i];
+
+        if ( sprite.getAnimationLabel() == 'ill' ) {
+            infectedCount += 1;
+        }
 
         if (sprite.vitamins) {
             total_vitamins += sprite.vitamins
@@ -215,7 +229,7 @@ function draw() {
     push();
     textSize(16);
     textAlign(CENTER, CENTER);
-    text(humans.length, 940, 55);
+    text(humans.length + ' (' + infectedCount + ' inf.)', 940, 55);
     pop();
 
     push();
@@ -323,8 +337,8 @@ function draw() {
 function mouseClicked() {
     if (gameOver && !restarting) {
         restarting  = true;
-        restartInfo = 3;
-        setTimeout(gameStart, 3000);
+        restartInfo = 5;
+        setTimeout(gameStart, 5000);
         setTimeout(countRestartInfo, 1000);
         return;
     };
@@ -430,7 +444,7 @@ function payCash(money) {
 
     if (cash >= 0) return;
 
-    gameStop();
+    gameStop('Out of cash');
 }
 
 function addCash(money) {
@@ -484,7 +498,7 @@ function killHuman(sprite) {
 
     if ( humans.length > 0 ) return;
 
-    gameStop();
+    gameStop('All humans are dead.');
 }
 
 function actionApple() {
@@ -611,7 +625,7 @@ function countRestartInfo() {
     setTimeout(countRestartInfo, 1000);
 }
 
-function gameStop() {
+function gameStop(reason) {
     if (gameOver) return;
 
     gameOver = true;
@@ -619,6 +633,8 @@ function gameStop() {
         clearInterval(gameIntervals[i]);
     }
     gameIntervals = [];
+
+    gameOverReason = reason;
 
     $.post("https://economy-keeper.bplaced.net/toplist.php", { name: username, points: points }, function( data ) {
         toplist = JSON.parse(data);
@@ -638,6 +654,8 @@ function gameStart() {
     restartInfo     = 0;
     restarting      = false;
     toplist         = undefined;
+    infectedCount   = 0;
+    gameOverReason  = undefined;
 
     addHumans(100);
     gameIntervals.push(setInterval(payCosts, costsTimer));
