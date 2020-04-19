@@ -16,8 +16,6 @@ var mortalityTimer;
 var mortalityFactor;
 var points;
 var pointsTimer;
-var restartInfo;
-var restarting;
 var username;
 var toplist;
 var infectedCount;
@@ -143,10 +141,11 @@ function preload() {
 
     username = 'anonymous-' + parseInt(random(1, 1000000));
 
-    humans = new Group();
-    apples = new Group();
-    trucks = new Group();
-    clouds = new Group();
+    humans      = new Group();
+    apples      = new Group();
+    trucks      = new Group();
+    clouds      = new Group();
+    waterstorms = new Group();
 
     animation_human_base   = loadAnimation('assets/human-base-frame-01.png', 'assets/human-base-frame-02.png', 'assets/human-base-frame-03.png', 'assets/human-base-frame-04.png', 'assets/human-base-frame-05.png');
     animation_human_ill    = loadAnimation('assets/human-frame-01.png', 'assets/human-frame-02.png', 'assets/human-frame-03.png', 'assets/human-frame-04.png', 'assets/human-frame-05.png');
@@ -250,27 +249,14 @@ function draw() {
         text(points + ' Points', 512, 382);
         pop();
 
-        if (restartInfo > 0) {
-            push();
-            fill(360, 100, 100);
-            textSize(16);
-            textAlign(CENTER, CENTER);
-            text('Game will restart in ' + restartInfo + ' seconds...', 850, 732);
-            pop();
-        }
-        else {
-            restart.visible = true;
-            restart.display();
-            restart.onMouseReleased = function() {
-                if (!restart.visible) return;
+        restart.visible = true;
+        restart.display();
+        restart.onMouseReleased = function() {
+            if (!restart.visible) return;
+            restart.visible = false;
 
-                restart.visible = false;
-                restarting  = true;
-                restartInfo = 5;
-                setTimeout(gameStart, 5000);
-                setTimeout(countRestartInfo, 1000);
-            };
-        }
+            gameStart();
+        };
 
         if (toplist) {
             push();
@@ -795,7 +781,6 @@ function actionVaccine() {
 function actionWaterstorm() {
     if (waterstorms && waterstorms.length > 0) return;
 
-    waterstorms = new Group();
     for (var i = 0; i < 20; i++) {
         var storm = createSprite(random(100, 800), random(100,600), 32, 32);
         storm.addAnimation('base', animation_waterstorm);
@@ -906,17 +891,36 @@ function setPoints() {
     points += parseInt( 100 * (humans.length / 100) );
 }
 
-function countRestartInfo() {
-    restartInfo -= 1;
-    if (restartInfo < 1)  return;
-    setTimeout(countRestartInfo, 1000);
-}
-
 function gameStop(reason) {
     if (gameOver) return;
 
+    for(var i = apples.length - 1; i >= 0; i--) {
+        var sprite = apples[i];
+
+        sprite.remove();
+    }
+
+    for(var i = clouds.length - 1; i >= 0; i--) {
+        var sprite = clouds[i];
+
+        sprite.remove();
+    }
+
+    for(var i = trucks.length - 1; i >= 0; i--) {
+        var sprite = trucks[i];
+
+        sprite.remove();
+    }
+
+    for(var i = waterstorms.length - 1; i >= 0; i--) {
+        var sprite = waterstorms[i];
+
+        sprite.remove();
+    }
+
     for(var i = humans.length - 1; i >= 0; i--) {
         var sprite = humans[i];
+
         sprite.remove();
     }
 
@@ -945,8 +949,6 @@ function gameStart() {
     mortalityFactor = 200;
     points          = 0;
     pointsTimer     = 1000;
-    restartInfo     = 0;
-    restarting      = false;
     toplist         = undefined;
     infectedCount   = 0;
     gameOverReason  = undefined;
