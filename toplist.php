@@ -22,7 +22,7 @@ function sort_toplist($a, $b) {
 
 usort($toplist, 'sort_toplist');
 
-$toplist = array_splice($toplist, 0, 19);
+$toplist = array_splice($toplist, 0, 20);
 $toplist_encoded = json_encode($toplist);
 
 file_put_contents('toplist.json', $toplist_encoded);
