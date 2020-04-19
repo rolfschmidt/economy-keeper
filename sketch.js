@@ -731,7 +731,7 @@ function killHuman(sprite, reason = undefined) {
     if (!sprite.truckHit) {
         if ( sprite.getAnimationLabel() == 'base' ) return healHuman(sprite);
         if ( sprite.getAnimationLabel() == 'mask' ) return healHuman(sprite, 'saved by masks');
-        if ( sprite.getAnimationLabel() == 'immune' ) return healHuman(sprite, 'saved by mask');
+        if ( sprite.getAnimationLabel() == 'immune' ) return healHuman(sprite, 'saved by immunity');
 
         if (sprite.vitamins && sprite.vitamins >= 30) {
             sprite.vitamins = 0;
@@ -867,7 +867,7 @@ function actionExecute() {
         var sprite = humans[i];
         if ( sprite.getAnimationLabel() != 'ill' ) continue;
 
-        killHuman(sprite, 'Execution');
+        killHuman(sprite, 'killed by manual execution');
         count += 1;
 
         if ( count == actionValue('execute') ) break;
