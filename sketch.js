@@ -527,6 +527,10 @@ function vaccinateHuman(sprite, reason = undefined) {
         humanHistory[reason] = humanHistory[reason] || 0;
         humanHistory[reason] += 1;
     }
+
+    setTimeout(function() {
+        healHuman(sprite);
+    }, 10000);
 }
 function maskHuman(sprite, reason = undefined) {
     sprite.changeAnimation('mask');
@@ -610,10 +614,6 @@ function actionVaccine() {
         if ( sprite.getAnimationLabel() == 'immune' ) continue;
 
         vaccinateHuman(sprite);
-
-        setTimeout(function() {
-            healHuman(sprite);
-        }, 10000);
 
         break;
     }
