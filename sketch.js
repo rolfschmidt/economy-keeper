@@ -19,6 +19,7 @@ var pointsTimer;
 var username;
 var toplist;
 var infectedCount;
+var totalTime;
 var upgrades = {
     'apple': {
         'level': 1,
@@ -227,6 +228,8 @@ function setup() {
 }
 
 function draw() {
+    totalTime += deltaTime;
+
     if (gameOver) {
         background(0, 0, 0);
 
@@ -879,6 +882,16 @@ function payCosts() {
     if (gameOver) return;
 
     costs = ( 100 - humans.length ) * 1000 * (1 + parseInt((200 - mortalityFactor) / 200));
+    if ( totalTime > 100000 ) {
+        costs *= 6;
+    }
+    else if ( totalTime > 80000 ) {
+        costs *= 4;
+    }
+    else if ( totalTime > 60000 ) {
+        costs *= 2;
+    }
+
     payCash(costs, 'daily costs (interval ' + parseInt(costsTimer / 1000) + 's)');
 }
 
@@ -946,14 +959,15 @@ function gameStop(reason) {
 }
 
 function gameStart() {
+    totalTime       = 0;
     humanHistory    = {};
     gameOver        = false;
     gameIntervals   = [];
     cash            = 100000;
     cashHistory     = [];
     costs           = 0;
-    costsTimer      = 3000;
-    mortalityTimer  = 5000;
+    costsTimer      = 5000;
+    mortalityTimer  = 1000;
     mortalityFactor = 200;
     points          = 0;
     pointsTimer     = 1000;
