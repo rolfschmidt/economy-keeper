@@ -15,6 +15,8 @@ var points;
 var pointsTimer;
 var restartInfo;
 var restarting;
+var username;
+var toplist;
 
 const apple_middle      = 270;
 const vaccine_middle    = 270 + 68;
@@ -29,6 +31,7 @@ function preload() {
     sidebar = createSprite(1024 - 80, 384);
     sidebar.addAnimation('base', 'assets/sidebar.png');
 
+    username               = $('span.user_name').text() || 'anonymous-' + parseInt(random(1, 1000000));
     humans                 = new Group();
     apples                 = new Group();
     trucks                 = new Group();
@@ -112,9 +115,29 @@ function draw() {
             pop();
         }
 
+        if (toplist) {
+            push();
+            fill(255, 204, 0);
+            textSize(32);
+            text('Toplist', 32, 64);
+            pop();
+
+            for (var i = 0; i < toplist.length; i++) {
+                push();
+                if ( toplist[i]['name'] == username ) {
+                    fill(153, 229, 80);
+                }
+                else {
+                    fill(360, 100, 100);
+                }
+                textSize(16);
+                text(toplist[i]['points'] + ' ' + toplist[i]['name'], 32, 96 + (32 * i));
+                pop();
+            }
+        }
+
         return;
     }
-
 
     if (waterstorms && waterstorms.length > 0) {
         background(0, 36, 255);
@@ -589,6 +612,10 @@ function gameStop() {
         clearInterval(gameIntervals[i]);
     }
     gameIntervals = [];
+
+    $.post("http://economy-keeper.bplaced.net/toplist.php", { name: username, points: points }, function( data ) {
+        toplist = JSON.parse(data);
+    });
 }
 
 function gameStart() {
