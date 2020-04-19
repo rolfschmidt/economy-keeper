@@ -131,7 +131,7 @@ function draw() {
                     fill(360, 100, 100);
                 }
                 textSize(16);
-                text(toplist[i]['points'] + ' ' + toplist[i]['name'], 32, 96 + (32 * i));
+                text((i + 1) + '. ' + toplist[i]['name'] + ' (' + toplist[i]['points'] + ' points)', 32, 96 + (32 * i));
                 pop();
             }
         }
