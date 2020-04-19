@@ -13,6 +13,8 @@ var mortalityTimer;
 var mortalityFactor;
 var points;
 var pointsTimer;
+var restartInfo;
+var restarting;
 
 const apple_middle      = 270;
 const vaccine_middle    = 270 + 68;
@@ -100,6 +102,15 @@ function draw() {
         textAlign(CENTER, CENTER);
         text('CLICK TO RESTART', 512, 400);
         pop();
+
+        if (restartInfo > 0) {
+            push();
+            fill(360, 100, 100);
+            textSize(16);
+            textAlign(CENTER, CENTER);
+            text('Game will restart in ' + restartInfo + ' seconds...', 512, 450);
+            pop();
+        }
 
         return;
     }
@@ -286,8 +297,11 @@ function draw() {
 }
 
 function mouseClicked() {
-    if (gameOver) {
-        gameStart();
+    if (gameOver && !restarting) {
+        restarting  = true;
+        restartInfo = 3;
+        setTimeout(gameStart, 3000);
+        setTimeout(countRestartInfo, 1000);
         return;
     };
 
@@ -570,16 +584,20 @@ function setPoints() {
     points += parseInt( 1000 * (humans.length / 100) );
 }
 
+function countRestartInfo() {
+    restartInfo -= 1;
+    if (restartInfo < 1)  return;
+    setTimeout(countRestartInfo, 1000);
+}
+
 function gameStop() {
     if (gameOver) return;
 
     gameOver = true;
     for (var i = gameIntervals.length - 1; i >= 0; i--) {
         clearInterval(gameIntervals[i]);
-        console.log('clear index', i);
     }
     gameIntervals = [];
-    console.log('clear gameIntervals', gameIntervals);
 }
 
 function gameStart() {
@@ -592,6 +610,8 @@ function gameStart() {
     mortalityFactor = 200;
     points          = 0;
     pointsTimer     = 1000;
+    restartInfo     = 0;
+    restarting      = false;
 
     addHumans(100);
     gameIntervals.push(setInterval(payCosts, costsTimer));
