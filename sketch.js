@@ -525,7 +525,7 @@ function killHuman(sprite) {
 
 function actionApple() {
     addApples(1);
-    sound_apple.play();
+    if (!sound_apple.isPlaying()) sound_apple.play();
 }
 
 function actionVaccine() {
@@ -544,7 +544,7 @@ function actionVaccine() {
         break;
     }
 
-    sound_needle.play();
+    if (!sound_needle.isPlaying()) sound_needle.play();
 }
 
 function actionWaterstorm() {
@@ -585,7 +585,7 @@ function actionWaterstorm() {
         }
     }, 2000);
 
-    sound_woosh.play();
+    if (!sound_woosh.isPlaying()) sound_woosh.play();
 }
 
 function actionMask() {
@@ -599,24 +599,24 @@ function actionMask() {
 
         break;
     }
-    sound_mask.play();
+    if (!sound_mask.isPlaying()) sound_mask.play();
 }
 
 function actionInflation() {
     addCash(10000);
-    sound_money.play();
+    if (!sound_money.isPlaying()) sound_money.play();
 }
 
 function actionTruck() {
     addTrucks(5);
     payCash( cash / 2 );
     mortalityFactor += 4;
-    sound_truck.play();
+    if (!sound_truck.isPlaying()) sound_truck.play();
 }
 
 function actionBirth() {
     addHumans(1);
-    sound_love.play();
+    if (!sound_love.isPlaying()) sound_love.play();
 }
 
 function actionExecute() {
@@ -628,7 +628,7 @@ function actionExecute() {
 
         break;
     }
-    sound_gun.play();
+    if (!sound_gun.isPlaying()) sound_gun.play();
 }
 
 function payCosts() {
