@@ -843,6 +843,8 @@ function actionInflation() {
 }
 
 function actionTruck() {
+    if (trucks.length > 0 || clouds.length > 0) return;
+
     addTrucks(5);
     payCash( cash * 0.5, 'Truck');
     mortalityFactor += actionValue('truck');
