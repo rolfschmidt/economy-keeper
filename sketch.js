@@ -735,6 +735,11 @@ function countRestartInfo() {
 function gameStop(reason) {
     if (gameOver) return;
 
+    for(var i = humans.length - 1; i >= 0; i--) {
+        var sprite = humans[i];
+        sprite.remove();
+    }
+
     gameOver = true;
     for (var i = gameIntervals.length - 1; i >= 0; i--) {
         clearInterval(gameIntervals[i]);
