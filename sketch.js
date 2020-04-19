@@ -4,20 +4,24 @@ var trucks;
 var waterstorms;
 var clouds;
 var hoverPos;
-var gameOver          = false;
-var cash              = 100000;
-var costs             = 0;
-var costsTimer        = 3000;
-var mortalityTimer    = 5000;
-var mortalityFactor   = 200;
-var apple_middle      = 270;
-var vaccine_middle    = 270 + 68;
-var waterstorm_middle = 270 + 68 + 68;
-var mask_middle       = 270 + 68 + 68 + 68;
-var inflation_middle  = 270 + 68 + 68 + 68 + 68;
-var truck_middle      = 270 + 68 + 68 + 68 + 68 + 68;
-var birth_middle      = 270 + 68 + 68 + 68 + 68 + 68 + 68;
-var execute_middle    = 270 + 68 + 68 + 68 + 68 + 68 + 68 + 68;
+var gameOver;
+var gameIntervals;
+var cash;
+var costs;
+var costsTimer;
+var mortalityTimer;
+var mortalityFactor;
+var points;
+var pointsTimer;
+
+const apple_middle      = 270;
+const vaccine_middle    = 270 + 68;
+const waterstorm_middle = 270 + 68 + 68;
+const mask_middle       = 270 + 68 + 68 + 68;
+const inflation_middle  = 270 + 68 + 68 + 68 + 68;
+const truck_middle      = 270 + 68 + 68 + 68 + 68 + 68;
+const birth_middle      = 270 + 68 + 68 + 68 + 68 + 68 + 68;
+const execute_middle    = 270 + 68 + 68 + 68 + 68 + 68 + 68 + 68;
 
 function preload() {
     sidebar = createSprite(1024 - 80, 384);
@@ -40,7 +44,6 @@ function preload() {
     animation_birth        = loadAnimation('assets/birth-0.png', 'assets/birth-1.png', 'assets/birth-2.png', 'assets/birth-3.png');
     animation_execute      = loadAnimation('assets/execute-0.png', 'assets/execute-1.png', 'assets/execute-2.png', 'assets/execute-3.png', 'assets/execute-4.png');
     animation_cloud        = loadAnimation('assets/cloud-0.png', 'assets/cloud-1.png', 'assets/cloud-2.png', 'assets/cloud-3.png', 'assets/cloud-4.png');
-    addHumans(100);
 
     apple = createSprite(1024 - 80, apple_middle);
     apple.addAnimation('base', animation_apple);
@@ -66,8 +69,7 @@ function preload() {
     execute = createSprite(1024 - 80, execute_middle);
     execute.addAnimation('base', animation_execute);
 
-    setTimeout(payCosts, costsTimer);
-    setTimeout(setMortality, mortalityTimer);
+    gameStart();
 }
 
 function setup() {
@@ -79,10 +81,24 @@ function draw() {
         background(0, 0, 0);
 
         push();
-        fill(255, 204, 0, 150);
+        fill(255, 204, 0);
         textSize(32);
         textAlign(CENTER, CENTER);
         text('GAME OVER', 512, 300);
+        pop();
+
+        push();
+        fill(153, 229, 80);
+        textSize(24);
+        textAlign(CENTER, CENTER);
+        text(points + ' Points', 512, 350);
+        pop();
+
+        push();
+        fill(255, 204, 0);
+        textSize(24);
+        textAlign(CENTER, CENTER);
+        text('CLICK TO RESTART', 512, 400);
         pop();
 
         return;
@@ -201,6 +217,13 @@ function draw() {
     textSize(12);
     textAlign(CENTER, CENTER);
     textStyle(BOLD);
+    text(points + ' Points', 940, 220);
+    pop();
+
+    push();
+    textSize(12);
+    textAlign(CENTER, CENTER);
+    textStyle(BOLD);
     text('Vitamin C', 940, apple_middle - 25);
     text('Level 1', 995, apple_middle + 16);
     pop();
@@ -263,7 +286,10 @@ function draw() {
 }
 
 function mouseClicked() {
-    if (gameOver) return;
+    if (gameOver) {
+        gameStart();
+        return;
+    };
 
     if (mouseX >= 1024 - 160 && mouseX <= 1024) {
 
@@ -366,7 +392,7 @@ function payCash(money) {
 
     if (cash >= 0) return;
 
-    gameOver = true;
+    gameStop();
 }
 
 function addCash(money) {
@@ -415,7 +441,7 @@ function killHuman(sprite) {
 
     if ( humans.length > 0 ) return;
 
-    gameOver = true;
+    gameStop();
 }
 
 function actionApple() {
@@ -529,7 +555,6 @@ function payCosts() {
 
     costs = ( 100 - humans.length ) * 1000 * (1 + parseInt((200 - mortalityFactor) / 200));
     payCash(costs);
-    setTimeout(payCosts, costsTimer);
 }
 
 function setMortality() {
@@ -539,6 +564,37 @@ function setMortality() {
     if (mortalityFactor - reduceBy > reduceBy) {
         mortalityFactor -= reduceBy;
     }
+}
 
-    setTimeout(setMortality, mortalityTimer);
+function setPoints() {
+    points += parseInt( 1000 * (humans.length / 100) );
+}
+
+function gameStop() {
+    if (gameOver) return;
+
+    gameOver = true;
+    for (var i = gameIntervals.length - 1; i >= 0; i--) {
+        clearInterval(gameIntervals[i]);
+        console.log('clear index', i);
+    }
+    gameIntervals = [];
+    console.log('clear gameIntervals', gameIntervals);
+}
+
+function gameStart() {
+    gameOver        = false;
+    gameIntervals   = [];
+    cash            = 100000;
+    costs           = 0;
+    costsTimer      = 3000;
+    mortalityTimer  = 5000;
+    mortalityFactor = 200;
+    points          = 0;
+    pointsTimer     = 1000;
+
+    addHumans(100);
+    gameIntervals.push(setInterval(payCosts, costsTimer));
+    gameIntervals.push(setInterval(setMortality, mortalityTimer));
+    gameIntervals.push(setInterval(setPoints, pointsTimer));
 }
