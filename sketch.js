@@ -176,9 +176,9 @@ function preload() {
     sound_levelup = loadSound('sounds/level_up_4.mp3');
 
     var volume = 0.1;
-    sound_apple.setVolume(volume);
+    sound_apple.setVolume(0.2);
     sound_gun.setVolume(volume);
-    sound_love.setVolume(volume);
+    sound_love.setVolume(0.2);
     sound_mask.setVolume(volume);
     sound_money.setVolume(volume);
     sound_needle.setVolume(volume);
@@ -895,6 +895,10 @@ function setPoints() {
 
 function gameStop(reason) {
     if (gameOver) return;
+
+    for (let [key, value] of Object.entries(upgrades)) {
+        upgrades[key]['level'] = 1;
+    }
 
     for(var i = apples.length - 1; i >= 0; i--) {
         var sprite = apples[i];
