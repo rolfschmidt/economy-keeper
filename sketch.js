@@ -709,7 +709,7 @@ function payCosts() {
     if (gameOver) return;
 
     costs = ( 100 - humans.length ) * 1000 * (1 + parseInt((200 - mortalityFactor) / 200));
-    payCash(costs, 'daily costs (interval ' + costsTimer + ' ms)');
+    payCash(costs, 'daily costs (interval ' + parseInt(costsTimer / 1000) + 's)');
 }
 
 function setMortality() {
