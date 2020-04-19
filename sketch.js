@@ -595,7 +595,7 @@ function setMortality() {
 }
 
 function setPoints() {
-    points += parseInt( 1000 * (humans.length / 100) );
+    points += parseInt( 100 * (humans.length / 100) );
 }
 
 function countRestartInfo() {
