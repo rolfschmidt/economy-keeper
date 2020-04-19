@@ -630,6 +630,7 @@ function gameStart() {
     pointsTimer     = 1000;
     restartInfo     = 0;
     restarting      = false;
+    toplist         = undefined;
 
     addHumans(100);
     gameIntervals.push(setInterval(payCosts, costsTimer));
