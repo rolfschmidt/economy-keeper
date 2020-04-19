@@ -21,6 +21,112 @@ var restarting;
 var username;
 var toplist;
 var infectedCount;
+var upgrades = {
+    'apple': {
+        'level': 1,
+        'values': {
+            1: 1,
+            2: 2,
+            3: 3,
+        },
+        'costs': {
+            1: 100000,
+            2: 250000,
+            3: 500000,
+        },
+    },
+    'vaccine': {
+        'level': 1,
+        'values': {
+            1: 1,
+            2: 2,
+            3: 3,
+        },
+        'costs': {
+            1: 100000,
+            2: 250000,
+            3: 500000,
+        },
+    },
+    'waterstorm': {
+        'level': 1,
+        'values': {
+            1: 0.5,
+            2: 0.4,
+            3: 0.3,
+        },
+        'costs': {
+            1: 100000,
+            2: 250000,
+            3: 500000,
+        },
+    },
+    'mask': {
+        'level': 1,
+        'values': {
+            1: 1,
+            2: 2,
+            3: 3,
+        },
+        'costs': {
+            1: 100000,
+            2: 250000,
+            3: 500000,
+        },
+    },
+    'inflation': {
+        'level': 1,
+        'values': {
+            1: 10000,
+            2: 12000,
+            3: 14000,
+        },
+        'costs': {
+            1: 100000,
+            2: 250000,
+            3: 500000,
+        },
+    },
+    'truck': {
+        'level': 1,
+        'values': {
+            1: 4,
+            2: 6,
+            3: 8,
+        },
+        'costs': {
+            1: 100000,
+            2: 250000,
+            3: 500000,
+        },
+    },
+    'birth': {
+        'level': 1,
+        'values': {
+            1: 1,
+            2: 2,
+            3: 3,
+        },
+        'costs': {
+            1: 100000,
+            2: 250000,
+            3: 500000,
+        },
+    },
+    'execute': {
+        'level': 1,
+        'values': {
+            1: 1,
+            2: 2,
+            3: 3,
+        },
+        'costs': {
+            1: 100000,
+            2: 250000,
+            3: 500000,
+        },
+    },
+};
 
 const apple_middle      = 270;
 const vaccine_middle    = 270 + 68;
@@ -57,6 +163,7 @@ function preload() {
     animation_execute      = loadAnimation('assets/execute-0.png', 'assets/execute-1.png', 'assets/execute-2.png', 'assets/execute-3.png', 'assets/execute-4.png');
     animation_cloud        = loadAnimation('assets/cloud-0.png', 'assets/cloud-1.png', 'assets/cloud-2.png', 'assets/cloud-3.png', 'assets/cloud-4.png');
     animation_restart      = loadAnimation('assets/restart-0.png', 'assets/restart-1.png', 'assets/restart-2.png', 'assets/restart-3.png', 'assets/restart-4.png');
+    animation_upgrade      = loadAnimation('assets/upgrade-0.png', 'assets/upgrade-1.png', 'assets/upgrade-2.png', 'assets/upgrade-3.png');
 
     soundFormats('mp3');
     sound_apple  = loadSound('sounds/apple.mp3');
@@ -68,7 +175,7 @@ function preload() {
     sound_truck  = loadSound('sounds/truck.mp3');
     sound_woosh  = loadSound('sounds/woosh.mp3');
 
-    var volume = 0.08;
+    var volume = 0.1;
     sound_apple.setVolume(volume);
     sound_gun.setVolume(volume);
     sound_love.setVolume(volume);
@@ -105,6 +212,10 @@ function preload() {
     restart = createSprite(512, 432);
     restart.addAnimation('base', animation_restart);
     restart.visible = false;
+
+    upgrade = createSprite(1,1);
+    upgrade.addAnimation('base', animation_upgrade);
+    upgrade.visible = false;
 
     gameStart();
 }
@@ -345,64 +456,80 @@ function draw() {
     textAlign(CENTER, CENTER);
     textStyle(BOLD);
     text('Vitamin C', 940, apple_middle - 25);
-    text('Level 1', 995, apple_middle + 16);
+    text('Level ' + upgrades['apple']['level'], 995, apple_middle + 16);
     pop();
+
+    drawUpgrade('apple', apple_middle);
 
     push();
     textSize(12);
     textAlign(CENTER, CENTER);
     textStyle(BOLD);
     text('Vaccinate', 940, vaccine_middle - 25);
-    text('Level 1', 995, vaccine_middle + 16);
+    text('Level ' + upgrades['vaccine']['level'], 995, vaccine_middle + 16);
     pop();
+
+    drawUpgrade('vaccine', vaccine_middle);
 
     push();
     textSize(12);
     textAlign(CENTER, CENTER);
     textStyle(BOLD);
     text('Water Storm', 940, waterstorm_middle - 25);
-    text('Level 1', 995, waterstorm_middle + 16);
+    text('Level ' + upgrades['waterstorm']['level'], 995, waterstorm_middle + 16);
     pop();
+
+    drawUpgrade('waterstorm', waterstorm_middle);
 
     push();
     textSize(12);
     textAlign(CENTER, CENTER);
     textStyle(BOLD);
     text('Mask Up!', 940, mask_middle - 25);
-    text('Level 1', 995, mask_middle + 16);
+    text('Level ' + upgrades['mask']['level'], 995, mask_middle + 16);
     pop();
+
+    drawUpgrade('mask', mask_middle);
 
     push();
     textSize(12);
     textAlign(CENTER, CENTER);
     textStyle(BOLD);
     text('Print Mooney', 940, inflation_middle - 25);
-    text('Level 1', 995, inflation_middle + 16);
+    text('Level ' + upgrades['inflation']['level'], 995, inflation_middle + 16);
     pop();
+
+    drawUpgrade('inflation', inflation_middle);
 
     push();
     textSize(12);
     textAlign(CENTER, CENTER);
     textStyle(BOLD);
     text('Mortality Trucks', 940, truck_middle - 25);
-    text('Level 1', 995, truck_middle + 15);
+    text('Level ' + upgrades['truck']['level'], 995, truck_middle + 15);
     pop();
+
+    drawUpgrade('truck', truck_middle);
 
     push();
     textSize(12);
     textAlign(CENTER, CENTER);
     textStyle(BOLD);
     text('Breed', 940, birth_middle - 25);
-    text('Level 1', 995, birth_middle + 15);
+    text('Level ' + upgrades['birth']['level'], 995, birth_middle + 15);
     pop();
+
+    drawUpgrade('birth', birth_middle);
 
     push();
     textSize(12);
     textAlign(CENTER, CENTER);
     textStyle(BOLD);
     text('Execute sick', 940, execute_middle - 25);
-    text('Level 1', 995, execute_middle + 15);
+    text('Level ' + upgrades['execute']['level'], 995, execute_middle + 15);
     pop();
+
+    drawUpgrade('execute', execute_middle);
 }
 
 function mouseClicked(event) {
@@ -411,36 +538,76 @@ function mouseClicked(event) {
     if (mouseX >= 1024 - 160 && mouseX <= 1024) {
 
         if (mouseY >= apple_middle - 34 && mouseY <= apple_middle + 34 ) {
-            actionApple();
-            hoverPos = apple_middle - 34;
+            if (mouseX >= 1000 - 16 && checkUpgrade('apple') ) {
+                doUpgrade('apple');
+            }
+            else {
+                actionApple();
+                hoverPos = apple_middle - 34;
+            }
         }
         else if (mouseY >= vaccine_middle - 34 && mouseY <= vaccine_middle + 34 ) {
-            actionVaccine();
-            hoverPos = vaccine_middle - 35;
+            if (mouseX >= 1000 - 16 && checkUpgrade('vaccine') ) {
+                doUpgrade('vaccine');
+            }
+            else {
+                actionVaccine();
+                hoverPos = vaccine_middle - 35;
+            }
         }
         else if (mouseY >= waterstorm_middle - 34 && mouseY <= waterstorm_middle + 34 ) {
-            actionWaterstorm();
-            hoverPos = waterstorm_middle - 35;
+            if (mouseX >= 1000 - 16 && checkUpgrade('waterstorm') ) {
+                doUpgrade('waterstorm');
+            }
+            else {
+                actionWaterstorm();
+                hoverPos = waterstorm_middle - 35;
+            }
         }
         else if (mouseY >= mask_middle - 34 && mouseY <= mask_middle + 34 ) {
-            actionMask();
-            hoverPos = mask_middle - 36;
+            if (mouseX >= 1000 - 16 && checkUpgrade('mask') ) {
+                doUpgrade('mask');
+            }
+            else {
+                actionMask();
+                hoverPos = mask_middle - 36;
+            }
         }
         else if (mouseY >= inflation_middle - 34 && mouseY <= inflation_middle + 34 ) {
-            actionInflation();
-            hoverPos = inflation_middle - 37;
+            if (mouseX >= 1000 - 16 && checkUpgrade('inflation') ) {
+                doUpgrade('inflation');
+            }
+            else {
+                actionInflation();
+                hoverPos = inflation_middle - 37;
+            }
         }
         else if (mouseY >= truck_middle - 34 && mouseY <= truck_middle + 34 ) {
-            actionTruck();
-            hoverPos = truck_middle - 38;
+            if (mouseX >= 1000 - 16 && checkUpgrade('truck') ) {
+                doUpgrade('truck');
+            }
+            else {
+                actionTruck();
+                hoverPos = truck_middle - 38;
+            }
         }
         else if (mouseY >= birth_middle - 34 && mouseY <= birth_middle + 34 ) {
-            actionBirth();
-            hoverPos = birth_middle - 38;
+            if (mouseX >= 1000 - 16 && checkUpgrade('birth') ) {
+                doUpgrade('birth');
+            }
+            else {
+                actionBirth();
+                hoverPos = birth_middle - 38;
+            }
         }
         else if (mouseY >= execute_middle - 34 && mouseY <= execute_middle + 34 ) {
-            actionExecute();
-            hoverPos = execute_middle - 38;
+            if (mouseX >= 1000 - 16 && checkUpgrade('execute') ) {
+                doUpgrade('execute');
+            }
+            else {
+                actionExecute();
+                hoverPos = execute_middle - 38;
+            }
         }
 
         setTimeout(function() {
@@ -603,11 +770,13 @@ function killHuman(sprite, reason = undefined) {
 }
 
 function actionApple() {
-    addApples(1);
-    if (!sound_apple.isPlaying()) sound_apple.play();
+    addApples( actionValue('apple') );
+    sound_apple.play();
 }
 
 function actionVaccine() {
+
+    var count = 0;
     for (var i = 0; i < humans.length; i++) {
         var sprite = humans[i];
         if ( sprite.getAnimationLabel() == 'ill' ) continue;
@@ -615,11 +784,12 @@ function actionVaccine() {
         if ( sprite.getAnimationLabel() == 'immune' ) continue;
 
         vaccinateHuman(sprite);
+        count += 1;
 
-        break;
+        if ( count == actionValue('vaccine') ) break;
     }
 
-    if (!sound_needle.isPlaying()) sound_needle.play();
+    sound_needle.play();
 }
 
 function actionWaterstorm() {
@@ -651,7 +821,7 @@ function actionWaterstorm() {
         }
     }
 
-    payCash( cash / 2, 'Waterstorm');
+    payCash( cash * actionValue('waterstorm'), 'Waterstorm');
     mortalityTimer = parseInt(mortalityTimer * 0.9);
 
     setTimeout(function() {
@@ -660,10 +830,12 @@ function actionWaterstorm() {
         }
     }, 2000);
 
-    if (!sound_woosh.isPlaying()) sound_woosh.play();
+    sound_woosh.play();
 }
 
 function actionMask() {
+
+    var count = 0;
     for (var i = 0; i < humans.length; i++) {
         var sprite = humans[i];
         if ( sprite.getAnimationLabel() == 'ill' ) continue;
@@ -671,39 +843,47 @@ function actionMask() {
         if ( sprite.getAnimationLabel() == 'immune' ) continue;
 
         maskHuman(sprite);
+        count += 1;
 
-        break;
+        if ( count == actionValue('mask') ) break;
     }
-    if (!sound_mask.isPlaying()) sound_mask.play();
+    sound_mask.play();
 }
 
 function actionInflation() {
-    addCash(10000);
-    if (!sound_money.isPlaying()) sound_money.play();
+    addCash( actionValue('inflation') );
+    sound_money.play();
 }
 
 function actionTruck() {
     addTrucks(5);
-    payCash( cash / 2, 'Truck');
-    mortalityFactor += 4;
-    if (!sound_truck.isPlaying()) sound_truck.play();
+    payCash( cash * 0.5, 'Truck');
+    mortalityFactor += actionValue('truck');
+    sound_truck.play();
 }
 
 function actionBirth() {
-    addHumans(1);
-    if (!sound_love.isPlaying()) sound_love.play();
+    addHumans( actionValue('birth') );
+    sound_love.play();
+}
+
+function actionValue(action) {
+    return upgrades[action]['values'][ upgrades[action]['level'] ];
 }
 
 function actionExecute() {
+
+    var count = 0;
     for (var i = 0; i < humans.length; i++) {
         var sprite = humans[i];
         if ( sprite.getAnimationLabel() != 'ill' ) continue;
 
         killHuman(sprite, 'Execution');
+        count += 1;
 
-        break;
+        if ( count == actionValue('execute') ) break;
     }
-    if (!sound_gun.isPlaying()) sound_gun.play();
+    sound_gun.play();
 }
 
 function payCosts() {
@@ -775,4 +955,29 @@ function gameStart() {
     gameIntervals.push(setInterval(payCosts, costsTimer));
     gameIntervals.push(setInterval(setMortality, mortalityTimer));
     gameIntervals.push(setInterval(setPoints, pointsTimer));
+}
+
+function checkUpgrade(action) {
+    upgradeLevel = upgrades[action]['level'] + 1;
+    if ( !upgrades[action]['costs'][upgradeLevel] ) return;
+    if ( cash < upgrades[action]['costs'][upgradeLevel] ) return;
+
+    return true;
+}
+
+function drawUpgrade(action, posY) {
+    if ( !checkUpgrade(action) ) return;
+
+    upgrade.animation.draw(1000, posY - 8);
+}
+
+function doUpgrade(action) {
+    upgradeLevel = upgrades[action]['level'] + 1;
+    if ( !upgrades[action]['costs'][upgradeLevel] ) return;
+    if ( cash < upgrades[action]['costs'][upgradeLevel] ) return;
+
+    payCash(upgrades[action]['costs'][upgradeLevel], action + ' upgrade');
+    upgrades[action]['level'] += 1;
+
+    return true;
 }
