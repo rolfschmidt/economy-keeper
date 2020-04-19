@@ -1,4 +1,5 @@
 var humans;
+var humanHistory;
 var apples;
 var trucks;
 var waterstorms;
@@ -8,6 +9,7 @@ var gameOver;
 var gameOverReason;
 var gameIntervals;
 var cash;
+var cashHistory;
 var costs;
 var costsTimer;
 var mortalityTimer;
@@ -54,6 +56,7 @@ function preload() {
     animation_birth        = loadAnimation('assets/birth-0.png', 'assets/birth-1.png', 'assets/birth-2.png', 'assets/birth-3.png');
     animation_execute      = loadAnimation('assets/execute-0.png', 'assets/execute-1.png', 'assets/execute-2.png', 'assets/execute-3.png', 'assets/execute-4.png');
     animation_cloud        = loadAnimation('assets/cloud-0.png', 'assets/cloud-1.png', 'assets/cloud-2.png', 'assets/cloud-3.png', 'assets/cloud-4.png');
+    animation_restart      = loadAnimation('assets/restart-0.png', 'assets/restart-1.png', 'assets/restart-2.png', 'assets/restart-3.png', 'assets/restart-4.png');
 
     soundFormats('mp3');
     sound_apple  = loadSound('sounds/apple.mp3');
@@ -99,6 +102,10 @@ function preload() {
     execute = createSprite(1024 - 80, execute_middle);
     execute.addAnimation('base', animation_execute);
 
+    restart = createSprite(512, 432);
+    restart.addAnimation('base', animation_restart);
+    restart.visible = false;
+
     gameStart();
 }
 
@@ -131,13 +138,6 @@ function draw() {
         text(points + ' Points', 512, 382);
         pop();
 
-        push();
-        fill(255, 204, 0);
-        textSize(24);
-        textAlign(CENTER, CENTER);
-        text('CLICK TO RESTART', 512, 432);
-        pop();
-
         if (restartInfo > 0) {
             push();
             fill(360, 100, 100);
@@ -146,12 +146,25 @@ function draw() {
             text('Game will restart in ' + restartInfo + ' seconds...', 850, 732);
             pop();
         }
+        else {
+            restart.visible = true;
+            restart.display();
+            restart.onMouseReleased = function() {
+                if (!restart.visible) return;
+
+                restart.visible = false;
+                restarting  = true;
+                restartInfo = 5;
+                setTimeout(gameStart, 5000);
+                setTimeout(countRestartInfo, 1000);
+            };
+        }
 
         if (toplist) {
             push();
             fill(255, 204, 0);
             textSize(32);
-            text('Toplist', 32, 64);
+            text('TOPLIST', 32, 64);
             pop();
 
             for (var i = 0; i < toplist.length; i++) {
@@ -165,6 +178,41 @@ function draw() {
                 textSize(16);
                 text((i + 1) + '. ' + toplist[i]['name'] + ' (' + toplist[i]['points'] + ' points)', 32, 96 + (32 * i));
                 pop();
+            }
+        }
+
+        if (cashHistory) {
+            push();
+            fill(255, 204, 0);
+            textSize(32);
+            text('CASH HISTORY', 700, 64);
+            pop();
+
+            for (var i = 0; i < cashHistory.length; i++) {
+                push();
+                fill(360, 100, 100);
+                textSize(12);
+                text(cashHistory[i], 700, 96 + (i * 16));
+                pop();
+            }
+        }
+
+        if (humanHistory) {
+            push();
+            fill(255, 204, 0);
+            textSize(32);
+            text('HUMAN HISTORY', 700, 564);
+            pop();
+
+            var i = 0;
+            for (let [key, value] of Object.entries(humanHistory)) {
+                push();
+                fill(360, 100, 100);
+                textSize(12);
+                text(value + ' ' + key, 700, 596 + (i * 16));
+                pop();
+
+                i++;
             }
         }
 
@@ -198,7 +246,7 @@ function draw() {
     humans.collide(trucks, function(spriteA, spriteB) {
         if ( parseInt(random(1, 101)) != 100) return;
         spriteA.truckHit = true;
-        killHuman(spriteA);
+        killHuman(spriteA, 'killed by truck collision');
     });
 
     var total_vitamins = 0;
@@ -356,14 +404,8 @@ function draw() {
     pop();
 }
 
-function mouseClicked() {
-    if (gameOver && !restarting) {
-        restarting  = true;
-        restartInfo = 5;
-        setTimeout(gameStart, 5000);
-        setTimeout(countRestartInfo, 1000);
-        return;
-    };
+function mouseClicked(event) {
+    if (gameOver) return;
 
     if (mouseX >= 1024 - 160 && mouseX <= 1024) {
 
@@ -461,8 +503,13 @@ function addTrucks() {
     return true;
 }
 
-function payCash(money) {
-    cash -= parseInt(money);
+function payCash(money, reason) {
+    money = parseInt(money);
+
+    cash -= money;
+
+    cashHistory.unshift(cash + ' left after -' + money + ' for ' + reason);
+    cashHistory = cashHistory.slice(0, 19);
 
     if (cash >= 0) return;
 
@@ -473,14 +520,24 @@ function addCash(money) {
     cash += parseInt(money);
 }
 
-function vaccinateHuman(sprite) {
+function vaccinateHuman(sprite, reason = undefined) {
     sprite.changeAnimation('immune');
+
+    if (reason) {
+        humanHistory[reason] = humanHistory[reason] || 0;
+        humanHistory[reason] += 1;
+    }
 }
-function maskHuman(sprite) {
+function maskHuman(sprite, reason = undefined) {
     sprite.changeAnimation('mask');
+
+    if (reason) {
+        humanHistory[reason] = humanHistory[reason] || 0;
+        humanHistory[reason] += 1;
+    }
 }
 
-function infectHuman(sprite) {
+function infectHuman(sprite, reason = undefined) {
     if ( sprite.getAnimationLabel() == 'ill' ) return;
     if ( sprite.getAnimationLabel() == 'immune' ) return;
     if ( sprite.getAnimationLabel() == 'mask' ) {
@@ -488,31 +545,48 @@ function infectHuman(sprite) {
         return;
     }
 
+    if (reason) {
+        humanHistory[reason] = humanHistory[reason] || 0;
+        humanHistory[reason] += 1;
+    }
+
     sprite.changeAnimation('ill');
     setTimeout(function() {
-        killHuman(sprite);
+        killHuman(sprite, 'killed by infection');
     }, 5000);
 }
 
-function healHuman(sprite) {
+function healHuman(sprite, reason = undefined) {
     sprite.changeAnimation('base');
+
+    if (reason) {
+        humanHistory[reason] = humanHistory[reason] || 0;
+        humanHistory[reason] += 1;
+    }
 }
 
-function killHuman(sprite) {
+function killHuman(sprite, reason = undefined) {
+    if (gameOver) return;
+
     if (!sprite.truckHit) {
         if ( sprite.getAnimationLabel() == 'base' ) return healHuman(sprite);
-        if ( sprite.getAnimationLabel() == 'mask' ) return healHuman(sprite);
-        if ( sprite.getAnimationLabel() == 'immune' ) return healHuman(sprite);
+        if ( sprite.getAnimationLabel() == 'mask' ) return healHuman(sprite, 'saved by masks');
+        if ( sprite.getAnimationLabel() == 'immune' ) return healHuman(sprite, 'saved by mask');
 
         if (sprite.vitamins && sprite.vitamins >= 30) {
             sprite.vitamins = 0;
-            return healHuman(sprite);
+            return healHuman(sprite, 'saved by vitamins');
         }
     }
 
     var blood = createSprite(sprite.position.x, sprite.position.y, 32, 32);
     blood.addAnimation('blood', animation_human_blood);
     sprite.remove();
+
+    if (reason) {
+        humanHistory[reason] = humanHistory[reason] || 0;
+        humanHistory[reason] += 1;
+    }
 
     setTimeout(function() {
         blood.remove();
@@ -563,20 +637,20 @@ function actionWaterstorm() {
         var sprite = humans[i];
 
         if ( healOrInfect == 0 && sprite.getAnimationLabel() == 'ill' ) {
-            healHuman(sprite);
+            healHuman(sprite, 'saved by waterstorm');
         }
         else if ( healOrInfect == 1 && sprite.getAnimationLabel() != 'ill' ) {
             infectHuman(sprite);
         }
         else if ( healOrInfect == 2 && sprite.getAnimationLabel() == 'ill' ) {
-            vaccinateHuman(sprite);
+            vaccinateHuman(sprite, 'vaccinated by waterstorm');
         }
         else if ( healOrInfect == 3 && sprite.getAnimationLabel() == 'ill' ) {
-            maskHuman(sprite);
+            maskHuman(sprite, 'masked by waterstorm');
         }
     }
 
-    payCash( cash / 2 );
+    payCash( cash / 2, 'Waterstorm');
     mortalityTimer = parseInt(mortalityTimer * 0.9);
 
     setTimeout(function() {
@@ -609,7 +683,7 @@ function actionInflation() {
 
 function actionTruck() {
     addTrucks(5);
-    payCash( cash / 2 );
+    payCash( cash / 2, 'Truck');
     mortalityFactor += 4;
     if (!sound_truck.isPlaying()) sound_truck.play();
 }
@@ -624,7 +698,7 @@ function actionExecute() {
         var sprite = humans[i];
         if ( sprite.getAnimationLabel() != 'ill' ) continue;
 
-        killHuman(sprite);
+        killHuman(sprite, 'Execution');
 
         break;
     }
@@ -635,7 +709,7 @@ function payCosts() {
     if (gameOver) return;
 
     costs = ( 100 - humans.length ) * 1000 * (1 + parseInt((200 - mortalityFactor) / 200));
-    payCash(costs);
+    payCash(costs, 'daily costs (interval ' + costsTimer + ' ms)');
 }
 
 function setMortality() {
@@ -674,9 +748,11 @@ function gameStop(reason) {
 }
 
 function gameStart() {
+    humanHistory    = {};
     gameOver        = false;
     gameIntervals   = [];
     cash            = 100000;
+    cashHistory     = [];
     costs           = 0;
     costsTimer      = 3000;
     mortalityTimer  = 5000;
