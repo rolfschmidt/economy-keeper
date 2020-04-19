@@ -110,7 +110,8 @@ function preload() {
 }
 
 function setup() {
-  createCanvas(1024, 768);
+    frameRate(30);
+    createCanvas(1024, 768);
 }
 
 function draw() {
@@ -640,7 +641,7 @@ function actionWaterstorm() {
             healHuman(sprite, 'saved by waterstorm');
         }
         else if ( healOrInfect == 1 && sprite.getAnimationLabel() != 'ill' ) {
-            infectHuman(sprite);
+            infectHuman(sprite, 'infected by waterstorm');
         }
         else if ( healOrInfect == 2 && sprite.getAnimationLabel() == 'ill' ) {
             vaccinateHuman(sprite, 'vaccinated by waterstorm');
