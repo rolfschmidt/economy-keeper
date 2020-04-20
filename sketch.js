@@ -140,8 +140,6 @@ function preload() {
     sidebar = createSprite(1024 - 80, 384);
     sidebar.addAnimation('base', 'assets/sidebar.png');
 
-    username = 'anonymous-' + parseInt(random(1, 1000000));
-
     humans      = new Group();
     apples      = new Group();
     trucks      = new Group();
@@ -953,6 +951,26 @@ function gameStop(reason) {
 
     gameOverReason = reason;
 
+    if (!username) {
+        if ( getCookie('ecokeeper_username') ) {
+            username = getCookie('ecokeeper_username');
+        }
+        else {
+            username = '';
+            while (!username.match(/[a-zA-Z0-9_-]+/) && username < 30) {
+                username = prompt('Please enter a username for the ranking ([a-zA-Z0-9_-]+, 30 chars max)', '');
+                if (username == null) break;
+            }
+
+            if (username) {
+                setCookie('ecokeeper_username', username, 365);
+            }
+            else {
+                username = 'anonymous-' + parseInt(random(1, 1000000));
+            }
+        }
+    }
+
     $.post("https://economy-keeper.bplaced.net/toplist.php", { name: username, points: points }, function( data ) {
         toplist = JSON.parse(data);
     });
@@ -1006,4 +1024,27 @@ function doUpgrade(action) {
     sound_levelup.play();
 
     return true;
+}
+
+function setCookie(cname, cvalue, exdays) {
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    var expires = "expires="+ d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var decodedCookie = decodeURIComponent(document.cookie);
+    var ca = decodedCookie.split(';');
+    for(var i = 0; i <ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
 }
