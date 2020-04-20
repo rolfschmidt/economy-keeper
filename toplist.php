@@ -22,6 +22,17 @@ function sort_toplist($a, $b) {
 
 usort($toplist, 'sort_toplist');
 
+$unique      = array();
+$toplist_new = array();
+foreach ($toplist as $entry) {
+    if ( $unique[ $entry['name'] ] ) continue;
+
+    $toplist_new[] = $entry;
+
+    $unique[ $entry['name'] ] = 1;
+}
+$toplist = $toplist_new;
+
 $toplist = array_splice($toplist, 0, 20);
 $toplist_encoded = json_encode($toplist);
 
