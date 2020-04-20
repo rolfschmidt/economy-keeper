@@ -957,7 +957,7 @@ function gameStop(reason) {
         }
         else {
             username = '';
-            while (!username.match(/[a-zA-Z0-9_-]+/) && username < 30) {
+            while (!username.match(/^[a-zA-Z0-9_-]+$/) || username.length > 30) {
                 username = prompt('Please enter a username for the ranking ([a-zA-Z0-9_-]+, 30 chars max)', '');
                 if (username == null) break;
             }

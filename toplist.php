@@ -7,7 +7,7 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
     $name   = $_POST['name'];
     $points = (int) $_POST['points'];
 
-    if (!preg_match('/[a-zA-Z0-9_-]+/', $name) || strlen($name) > 30) {
+    if (!preg_match('/^[a-zA-Z0-9_-]+$/', $name) || strlen($name) > 30) {
         $name = 'anonymous';
     }
     if ( $points < 1000000000 ) {
